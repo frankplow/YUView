@@ -294,7 +294,8 @@ void StatisticUIHandler::onSecondaryStatisticsControlChanged()
 
 void StatisticUIHandler::deleteSecondaryStatisticsHandlerControls()
 {
-  secondaryControlsWidget->deleteLater();
+  if (secondaryControlsWidget)
+    secondaryControlsWidget->deleteLater();
   ui2.clear();
   itemNameCheckBoxes[1].clear();
   itemOpacitySliders[1].clear();
