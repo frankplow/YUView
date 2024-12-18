@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
+#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -59,21 +60,15 @@ public:
     using pointer           = ValueNamePair *;
     using reference         = ValueNamePair &;
 
-    Iterator(const ItemIterator itItem, const NameIterator itName) : itItem(itItem), itName(itName)
-    {
-      this->valueNamePair.first  = *itItem;
-      this->valueNamePair.second = *itName;
-    }
+    Iterator(const ItemIterator itItem, const NameIterator itName) : itItem(itItem), itName(itName) {}
 
-    ValueNamePair const &operator*() const { return this->valueNamePair; }
-    ValueNamePair const *operator->() const { return &this->valueNamePair; }
+    ValueNamePair const operator*() const { return ValueNamePair(*this->itItem, *this->itName); }
+    std::unique_ptr<ValueNamePair> const operator->() const { return std::make_unique<ValueNamePair>(*this->itItem, *this->itName); }
 
     Iterator &operator++()
     {
       ++this->itItem;
       ++this->itName;
-      this->valueNamePair.first  = *this->itItem;
-      this->valueNamePair.second = *this->itName;
       return *this;
     }
 
@@ -89,7 +84,6 @@ public:
   private:
     ItemIterator  itItem;
     NameIterator  itName;
-    ValueNamePair valueNamePair{};
   };
 
   Iterator begin() const { return Iterator(this->items.begin(), this->names.begin()); }
